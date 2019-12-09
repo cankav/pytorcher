@@ -10,21 +10,22 @@ import multiprocessing
 import torch.multiprocessing as mp
 
 """Blocking point-to-point communication."""
-def run(rank, world_size):
-    tensor = torch.zeros(1)
-    if rank == 0:
-        # receive from all other processes
-        for other_rank in range(1, world_size):
-            req=dist.recv(tensor=tensor, src=other_rank)
-            print('received from other_rank %s\n%s' %(other_rank, tensor))
+def run(global_rank, world_size):
+    output = torch.ones(1)*-1
+    if global_rank == 0:
+        one = torch.ones([1])
+        scatter_list = [one.clone() * i for i in range(world_size)]
+        dist.scatter(output, scatter_list=scatter_list)
+
     else:
         # process and return tensor
+        dist.scatter(output)
+
         a=0
         for i in range(10**5):
             a+=1
-        req=dist.send(tensor=tensor, dst=0)
 
-    print('Rank ', rank, ' has data ', tensor[0])
+    print('Rank ', global_rank, ' has data ', output[0])
 
 def init_process(process_rank, core_count, args, world_size):
     """ Initialize the distributed environment. """
@@ -51,5 +52,6 @@ if __name__ == "__main__":
     mp.spawn(init_process, nprocs=core_count, args=(core_count, args, world_size))
 
 # commands on a two node system:
-# python3 run_distributed.py --dist_url 'tcp://localhost:11312' --node_rank 0 --total_node_count 2
-# python3 run_distributed.py --dist_url 'tcp://localhost:11312' --node_rank 1 --total_node_count 2
+#python3 run_distributed_send_data.py --dist_url 'tcp://localhost:11312' --node_rank 0 --total_node_count 2
+#python3 run_distributed_send_data.py --dist_url 'tcp://localhost:11312' --node_rank 1 --total_node_count 2
+
