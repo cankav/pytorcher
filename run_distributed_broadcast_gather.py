@@ -47,9 +47,9 @@ def init_process(process_rank, core_count, args, world_size):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='PyTorch Pomdp Solvers')
-    parser.add_argument('--dist_url', default='tcp://127.0.0.1:23456', type=str, help='url of the host')
-    parser.add_argument('--node_rank', default=-1, type=int, help='rank of this node')
-    parser.add_argument('--total_node_count', default=-1, type=int, help='number of nodes for distributed training')
+    parser.add_argument('--dist_url', type=str, help='url of the host')
+    parser.add_argument('--node_rank', type=int, help='rank of this node')
+    parser.add_argument('--total_node_count', type=int, help='number of nodes for distributed training')
     args = parser.parse_args()
 
     core_count = multiprocessing.cpu_count()
