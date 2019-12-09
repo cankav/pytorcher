@@ -6,7 +6,6 @@ import multiprocessing
 import torch.multiprocessing as mp
 import sys
 
-"""Blocking point-to-point communication."""
 def run(global_rank, world_size):
     tensor = torch.ones(1)*-1
     if global_rank == 0:
